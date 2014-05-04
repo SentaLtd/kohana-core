@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.1';
-	const CODENAME = 'peregrinus';
+	const VERSION  = '5.0.0';
+	const CODENAME = 'sileo';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
@@ -607,6 +607,19 @@ class Kohana_Core {
 	}
 
 	/**
+	 * Add path to the top of include paths (first viewed)
+	 *
+	 * @param   array   $path    path to adding
+	 */
+	public static function add_path($path)
+	{
+		if (!empty($path) AND is_dir($path))
+		{
+			array_unshift(self::$_paths, $path);
+		}
+	}
+	
+	/**
 	 * Returns the the currently active include paths, including the
 	 * application, system, and each module's path.
 	 *
@@ -809,6 +822,80 @@ class Kohana_Core {
 				}
 			}
 		}
+
+		// Sort the results alphabetically
+		ksort($found);
+
+		return $found;
+	}
+	
+	/**
+	 * Recursively finds all of the dirs in the specified directory at any
+	 * location in the [Cascading Filesystem](kohana/files), and returns an
+	 * array of all the dirs found, sorted alphabetically.
+	 *
+	 *     // Find all view dirs.
+	 *     $view_dirs = Kohana::list_files('views');
+	 *
+	 * @param   string  $directory  directory name
+	 * @param   array   $paths      list of paths to search
+	 * @return  array
+	 */
+	public static function list_dirs($directory = NULL, array $paths = NULL)
+	{
+
+		if ($directory !== NULL)
+		{
+			// Add the directory separator
+			$directory .= DIRECTORY_SEPARATOR;
+		}
+
+		if ($paths === NULL)
+		{
+			// Use the default paths
+			$paths = Kohana::$_paths;
+		}
+
+		// Create an array for the files
+		$found = array();
+
+		foreach ($paths as $path)
+		{
+			if (is_dir($path . $directory))
+			{
+				// Create a new directory iterator
+				$dir = new DirectoryIterator($path . $directory);
+
+				foreach ($dir as $file)
+				{
+					// Get the file name
+					$filename = $file->getFilename();
+
+					if ($filename[0] === '.' OR $filename[strlen($filename) - 1] === '~')
+					{
+						// Skip all hidden files and UNIX backup files
+						continue;
+					}
+
+
+					if ($file->isDir())
+					{
+						// Relative filename is the array key
+						//$key = $directory . $filename;
+						if (!isset($found[$filename]))
+						{
+							// Add new files to the list
+							$found[$filename] = realpath($file->getPathName());
+						}
+					}
+					else
+					{
+
+					}
+				}
+			}
+		}
+
 
 		// Sort the results alphabetically
 		ksort($found);

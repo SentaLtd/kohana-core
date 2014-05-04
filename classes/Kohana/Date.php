@@ -599,5 +599,27 @@ class Kohana_Date {
 
 		return $time->format($timestamp_format);
 	}
+	 
+	/**
+	 * Returns a date/time string with the specified timestamp format
+	 *
+	 *     $time = Date::formatted_date('5 minutes ago');
+	 *
+	 * @link    http://www.php.net/manual/datetime.construct
+	 * @param   string  $datetime_str       datetime string
+	 * @param   string  $timestamp_format   timestamp format
+	 * @param   string  $timezone           timezone identifier
+	 * @return  string
+	 */
+	public static function formatted_date($timestamp = null, $format = '%d %B %Y %T')
+	{
+
+		if ($timestamp == null)
+		{
+			$timestamp = time();
+		}
+
+		return strftime($format, $timestamp);
+	}
 
 }
