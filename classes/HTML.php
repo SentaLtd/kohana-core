@@ -1,3 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class HTML extends Kohana_HTML {}
+
+namespace Kohana;
+
+class HTML extends Base_HTML {}

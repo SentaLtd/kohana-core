@@ -1,6 +1,8 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class UTF8 extends Kohana_UTF8 {}
+namespace Kohana;
+
+class UTF8 extends Base_UTF8 {}
 
 if (UTF8::$server_utf8 === NULL)
 {

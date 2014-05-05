@@ -1,3 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Date extends Kohana_Date {}
+namespace Kohana;
+
+class Date extends Base_Date {}

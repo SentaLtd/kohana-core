@@ -1,3 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Config_File extends Kohana_Config_File {}
+namespace Kohana\Config;
+
+class File extends \Kohana\Base\Config\File {}

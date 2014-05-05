@@ -1,3 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Kohana extends Kohana_Core {}
+namespace Kohana;
+
+class Kohana extends Base_Kohana {}
