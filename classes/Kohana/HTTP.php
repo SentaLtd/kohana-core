@@ -84,6 +84,40 @@ abstract class Kohana_HTTP {
 	}
 
 	/**
+	 * Checks the browser cache to see the response needs to be returned,
+	 * execution will halt and a 304 Not Modified will be sent if the
+	 * browser cache is up to date.
+	 *
+	 *     $this->check_cache($modified);
+	 *
+	 * @param  Request   $request   Request
+	 * @param  Response  $response  Response
+	 * @param  string    $modified  Last Modified time
+	 * @return Response
+	 */
+	protected function check_modified(Request $request, Response $response, $modified = NULL)
+	{
+		// Check if we have a matching if-modified-since
+		if ($request->headers('if-modified-since') AND strtotime($request->headers('if-modified-since')) >= $modified)
+		{
+			// No need to send data again
+			throw HTTP_Exception::factory(304)->headers("Cache-Control", "public, must-revalidate");
+		}
+		$response->headers('last-modified', gmdate('r', $modified));
+
+		// Add the Cache-Control header if it is not already set
+		// This allows etags to be used with max-age, etc
+		if ($response->headers('cache-control'))
+		{
+			$response->headers('cache-control', $response->headers('cache-control') . ', must-revalidate');
+		}
+		else
+		{
+			$response->headers('cache-control', 'must-revalidate');
+		}
+	}
+
+	/**
 	 * Parses a HTTP header string into an associative array
 	 *
 	 * @param   string   $header_string  Header string to parse
