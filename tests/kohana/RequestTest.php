@@ -345,7 +345,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Provides data for test_post_max_size_exceeded()
-	 * 
+	 *
 	 * @return  array
 	 */
 	public function provider_post_max_size_exceeded()
@@ -371,11 +371,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests the post_max_size_exceeded() method
-	 * 
+	 *
 	 * @dataProvider provider_post_max_size_exceeded
 	 *
-	 * @param   int      content_length 
-	 * @param   bool     expected 
+	 * @param   int      content_length
+	 * @param   bool     expected
 	 * @return  void
 	 */
 	public function test_post_max_size_exceeded($content_length, $expected)
@@ -434,7 +434,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	/**
 	 * Tests that the uri supplied to Request is only trimed
 	 * for internal requests.
-	 * 
+	 *
 	 * @dataProvider provider_uri_only_trimed_on_internal
 	 *
 	 * @return void
@@ -474,9 +474,9 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * can be set to the external client (for cURL and PECL_HTTP)
 	 *
 	 * @dataProvider provider_options_set_to_external_client
-	 * 
-	 * @param   array    settings 
-	 * @param   array    expected 
+	 *
+	 * @param   array    settings
+	 * @param   array    expected
 	 * @return void
 	 */
 	public function test_options_set_to_external_client($settings, $expected)
@@ -524,7 +524,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests getting headers from the Request object
-	 * 
+	 *
 	 * @dataProvider provider_headers_get
 	 *
 	 * @param   Request  request to test
@@ -568,7 +568,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests the setting of headers to the request object
-	 * 
+	 *
 	 * @dataProvider provider_headers_set
 	 *
 	 * @param   Request    request object
@@ -632,19 +632,19 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests that query parameters are parsed correctly
-	 * 
+	 *
 	 * @dataProvider provider_query_parameter_parsing
 	 *
-	 * @param   Request   request 
-	 * @param   array     query 
-	 * @param   array    expected 
+	 * @param   Request   request
+	 * @param   array     query
+	 * @param   array    expected
 	 * @return  void
 	 */
 	public function test_query_parameter_parsing(Request $request, $query, $expected)
 	{
 		foreach ($query as $key => $value)
 		{
-			$request->query($key, $value);
+			$request->set_query($key, $value);
 		}
 
 		$this->assertSame($expected, $request->query());
@@ -676,12 +676,12 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests the getter/setter for request client
-	 * 
+	 *
 	 * @dataProvider provider_client
 	 *
-	 * @param   Request $request 
-	 * @param   Request_Client $client 
-	 * @param   Request_Client $expected 
+	 * @param   Request $request
+	 * @param   Request_Client $client
+	 * @param   Request_Client $expected
 	 * @return  void
 	 */
 	public function test_client(Request $request, Request_Client $client, Request_Client $expected)
@@ -715,6 +715,6 @@ class Controller_Kohana_RequestTest_Dummy extends Controller
 {
 	public function action_index()
 	{
-	
+
 	}
 } // End Kohana_RequestTest

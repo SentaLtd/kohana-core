@@ -157,8 +157,8 @@ class Kohana_Request implements HTTP_Request {
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
-				->query($_GET)
-				->post($_POST);
+				->set_query($_GET)
+				->set_post($_POST);
 
 			if (isset($secure))
 			{
@@ -192,7 +192,7 @@ class Kohana_Request implements HTTP_Request {
 
 			if (isset($cookies))
 			{
-				$request->cookie($cookies);
+				$request->set_cookie($cookies);
 			}
 		}
 		else
@@ -457,7 +457,7 @@ class Kohana_Request implements HTTP_Request {
 	public static function process(Request $request, $routes = NULL)
 	{
 		// Preroute routines
-		// 
+		//
 		// Get the URI from the Request
 		$uri = trim($request->uri(), '/');
 
@@ -780,7 +780,7 @@ class Kohana_Request implements HTTP_Request {
 			return $this->_params;
 		}
 
-		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
+		return Arr::path($this->_params, $key, $default);
 	}
 
 	/**
@@ -1146,34 +1146,46 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Set and get cookies values for this request.
+	 * Get cookies values for this request.
+	 *
+	 * @param   mixed    $key      Cookie name, or array of cookie values
+	 * @param   string   $default  Value to set to cookie
+	 * @return  string
+	 * @return  mixed
+	 */
+	public function cookie($key = NULL, $default = NULL)
+	{
+		if ($key === NULL)
+		{
+			// $key is not given, return all cookies
+			return $this->_cookies;
+		}
+
+		// $key is given, return single cookie
+		return Arr::path($this->_cookies, $key, $default);
+	}
+
+	/**
+	 * Set cookies values for this request.
 	 *
 	 * @param   mixed    $key    Cookie name, or array of cookie values
 	 * @param   string   $value  Value to set to cookie
 	 * @return  string
 	 * @return  mixed
 	 */
-	public function cookie($key = NULL, $value = NULL)
+	public function set_cookie($key = NULL, $value = NULL)
 	{
 		if (is_array($key))
 		{
-			// Act as a setter, replace all cookies
+			// $key is array, replace all cookies
 			$this->_cookies = $key;
 			return $this;
 		}
-		elseif ($key === NULL)
+		elseif ($key != NULL)
 		{
-			// Act as a getter, all cookies
-			return $this->_cookies;
+			// Act as a setter for a single cookie
+			$this->_cookies[$key] = (string) $value;
 		}
-		elseif ($value === NULL)
-		{
-			// Act as a getting, single cookie
-			return isset($this->_cookies[$key]) ? $this->_cookies[$key] : NULL;
-		}
-
-		// Act as a setter for a single cookie
-		$this->_cookies[$key] = (string) $value;
 
 		return $this;
 	}
@@ -1267,71 +1279,94 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Gets or sets HTTP query string.
+	 * Gets HTTP query string.
+	 *
+	 * @param   mixed   $key        Key or key value pairs to set
+	 * @param   string  $default    default value
+	 * @return  mixed
+	 * @uses    Arr::path
+	 */
+	public function query($key = NULL, $default = NULL)
+	{
+
+		if ($key === NULL)
+		{
+			// Array given, all query strings
+			return $this->_get;
+		}
+
+		// $key is given, single query string
+		return Arr::path($this->_get, $key, $default);
+	}
+
+	/**
+	 * Sets HTTP query string.
 	 *
 	 * @param   mixed   $key    Key or key value pairs to set
 	 * @param   string  $value  Value to set to a key
 	 * @return  mixed
 	 * @uses    Arr::path
 	 */
-	public function query($key = NULL, $value = NULL)
+	public function set_query($key = NULL, $value = NULL)
 	{
 		if (is_array($key))
 		{
-			// Act as a setter, replace all query strings
+			// $key is array, replace all query strings
 			$this->_get = $key;
 
 			return $this;
 		}
-
-		if ($key === NULL)
+		elseif ($key != NULL)
 		{
-			// Act as a getter, all query strings
-			return $this->_get;
+			// $key is given, single query string
+			$this->_get[$key] = $value;
 		}
-		elseif ($value === NULL)
-		{
-			// Act as a getter, single query string
-			return Arr::path($this->_get, $key);
-		}
-
-		// Act as a setter, single query string
-		$this->_get[$key] = $value;
 
 		return $this;
 	}
 
 	/**
-	 * Gets or sets HTTP POST parameters to the request.
+	 * Gets HTTP POST parameters from the request.
+	 *
+	 * @param   mixed  $key       Key or key value pairs to set
+	 * @param   string $default   default value
+	 * @return  mixed
+	 * @uses    Arr::path
+	 */
+	public function post($key = NULL, $default = NULL)
+	{
+		if ($key === NULL)
+		{
+			// $key is not given, return all fields
+			return $this->_post;
+		}
+
+		// $key is given, return single field
+		return Arr::path($this->_post, $key, $default);
+	}
+
+	/**
+	 * Sets HTTP POST parameters to the request.
 	 *
 	 * @param   mixed  $key    Key or key value pairs to set
 	 * @param   string $value  Value to set to a key
 	 * @return  mixed
 	 * @uses    Arr::path
 	 */
-	public function post($key = NULL, $value = NULL)
+	public function set_post($key = NULL, $value = NULL)
 	{
 		if (is_array($key))
 		{
-			// Act as a setter, replace all fields
+			// $key is array, replace all fields
 			$this->_post = $key;
 
 			return $this;
 		}
-
-		if ($key === NULL)
+		elseif ($key != NULL)
 		{
-			// Act as a getter, all fields
-			return $this->_post;
+			// $key is given, set single field
+			$this->_post[$key] = $value;
 		}
-		elseif ($value === NULL)
-		{
-			// Act as a getter, single field
-			return Arr::path($this->_post, $key);
-		}
-
-		// Act as a setter, single field
-		$this->_post[$key] = $value;
 
 		return $this;
 	}
